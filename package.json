@@ -1,0 +1,24 @@
+{
+  "name": "gen-range",
+  "version": "0.0.0",
+  "description": "Generators-powered Rust-like range library. Created just for the fun of it.",
+  "main": "range.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jurca/range.git"
+  },
+  "keywords": [
+    "range",
+    "rust",
+    "generators"
+  ],
+  "author": "Martin Jurča <mjurca@centrum.cz>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jurca/range/issues"
+  },
+  "homepage": "https://github.com/jurca/range#readme"
+}
