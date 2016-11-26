@@ -4,7 +4,7 @@
  * @param {number} start
  * @param {number} end
  * @param {?number} step
- * @return {Range}
+ * @return {Range<number>}
  */
 function range(start, end, step = null) {
   if (!Number.isSafeInteger(start)) {
@@ -43,20 +43,29 @@ function range(start, end, step = null) {
     }
   }
 
+  /**
+   * @template E
+   */
   class Range {
+    /**
+     * @template P
+     * @param {?function(E, number, Range): boolean} filter
+     * @param {?function(P, number, Range): *} map
+     * @param {?Range<P>} parentRange
+     */
     constructor(filter = null, map = null, parentRange = null) {
       /**
-       * @type {?function(*, number, Range): boolean}
+       * @type {?function(E, number, Range): boolean}
        */
       this._filter = filter
 
       /**
-       * @type {?function(*, number, Range): *}
+       * @type {?function(*, number, Range): E}
        */
       this._map = map
 
       /**
-       * @type {?*}
+       * @type {E}
        */
       this._currentValue = start
 
@@ -81,7 +90,7 @@ function range(start, end, step = null) {
       this._count = null
 
       /**
-       * @type {[{done: boolean, value: *}, number][]}
+       * @type {[{done: boolean, value: E}, number][]}
        */
       this._preGeneratedValues = []
 
@@ -91,6 +100,9 @@ function range(start, end, step = null) {
       this._generatedValuesCount = 0
     }
 
+    /**
+     * @return {number}
+     */
     get count() {
       if (this._count !== null) {
         return this._count
@@ -132,7 +144,7 @@ function range(start, end, step = null) {
     }
 
     /**
-     * @return {{done: boolean, value: *}}
+     * @return {{done: boolean, value: E}}
      */
     next() {
       let iteration, nextIndex
@@ -149,34 +161,66 @@ function range(start, end, step = null) {
       return iteration
     }
 
+    /**
+     * @return {Range<[number, E]>}
+     */
     enumerate() {
       return this.map((value, index) => [index, value])
     }
 
+    /**
+     * @return {Range<E>}
+     * @throws {Error} Thrown if this range is infinite.
+     */
     reverse() {
       if (!Numer.isFinite(end)) {
         throw new Error('Infinite ranges cannot be reversed')
       }
 
+      // TODO: fix support for filtered/mapped ranges
       return range(end, this._currentValue, -step)
     }
 
+    /**
+     * @template R
+     * @param {function(E, number, Range): R} mapCallback
+     * @return {Range<R>}
+     */
     map(mapCallback) {
       return new Range(null, mapCallback, this)
     }
 
+    /**
+     * @param {function(E, number, Range): boolean} filterCallback
+     * @return {Range<E>}
+     */
     filter(filterCallback) {
       return new Range(filterCallback, null, this)
     }
 
+    /**
+     * @param {number} count
+     * @return {Range<E>}
+     */
     take(count) {
       // TODO
     }
 
+    /**
+     * @param {function(E, number, Range): boolean} precondition
+     * @return {Range<E>}
+     */
     takeWhile(precondition) {
       // TODO
     }
 
+    /**
+     * @template I
+     * @template R
+     * @param {I} initialValue
+     * @param {function((I|E|R), E): R} operation
+     * @return {R}
+     */
     fold(initialValue, operation) {
       if (!Number.isFinite(end)) {
         throw new Error(
@@ -201,6 +245,9 @@ function range(start, end, step = null) {
       this._index = 0
     }
 
+    /**
+     * @return {Range<E>}
+     */
     clone() {
       let parentClone = this._parentRange ? this._parentRange.clone() : null
       let clone = new Range(this._filter, this._map, parentClone)
@@ -216,7 +263,7 @@ function range(start, end, step = null) {
     }
 
     /**
-     * @return {Range}
+     * @return {Range<E>}
      */
     [Symbol.iterator]() {
       return this
@@ -224,9 +271,10 @@ function range(start, end, step = null) {
   }
 
   /**
-   * @param {Range} range
+   * @template E
+   * @param {Range<E>} range
    * @param {number} currentIndex
-   * @return {[{done: boolean, value: *}, number]}
+   * @return {[{done: boolean, value: E}, number]}
    */
   function getNextValue(range, currentIndex) {
     let iteration = range._iterator.next()
@@ -252,8 +300,8 @@ function range(start, end, step = null) {
   }
 
   /**
-   * @param {Range} rangeInstance
-   * @return {{next: function(): {done: boolean, value: *}}}
+   * @param {Range<number>} rangeInstance
+   * @return {{next: function(): {done: boolean, value: number}}}
    */
   function createIterator(rangeInstance) {
     return (function * () {
