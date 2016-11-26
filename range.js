@@ -263,6 +263,13 @@ function range(start, end, step = null) {
     }
 
     /**
+     * @return {E[]}
+     */
+    toArray() {
+      return [...this]
+    }
+
+    /**
      * @return {Range<E>}
      */
     [Symbol.iterator]() {
