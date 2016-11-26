@@ -43,25 +43,27 @@ function range(start, end, step = null) {
     }
   }
 
-  const IDENTITY = _ => _
-  const TAUTOLOGY = () => true
-
   class Range {
-    constructor(filter = TAUTOLOGY, map = IDENTITY, parentRange = null) {
+    constructor(filter = null, map = null, parentRange = null) {
       /**
-       * @type {function(*, number, Range): boolean}
+       * @type {?function(*, number, Range): boolean}
        */
       this._filter = filter
 
       /**
-       * @type {function(*, number, Range): *}
+       * @type {?function(*, number, Range): *}
        */
       this._map = map
 
       /**
-       * @type {number}
+       * @type {?*}
        */
       this._currentValue = start
+
+      /**
+       * @type {number}
+       */
+      this._index = 0
 
       /**
        * @type {Range}
@@ -69,45 +71,23 @@ function range(start, end, step = null) {
       this._parentRange = parentRange
 
       /**
-       * @type {number}
+       * @type {{next: function(): *}}
        */
-      this._index = 0
-
-      let instance = this
-
-      /**
-       * @type {{next: function(): number}}
-       */
-      this._iterator = (function * () {
-        while (!isEnded()) {
-          yield instance._currentValue
-
-          let currentSafeLimit = Number.POSITIVE_INFINITY - Math.abs(step)
-          if (currentSafeLimit > Math.abs(instance._currentValue)) {
-            instance._currentValue =
-                Math.sign(instance._currentValue) * Infinity
-          } else {
-            instance._currentValue += step
-          }
-        }
-
-        function isEnded() {
-          return (step > 0) ?
-              (instance._currentValue >= end) :
-              (instance._currentValue <= end)
-        }
-      })()
+      this._iterator = parentRange || createIterator(this)
     }
 
     get count() {
-      if (Number.isFinite(end)) {
-        if (this._filter === TAUTOLOGY) {
-          return Math.floor((end - start) / step)
-        }
-        // TODO
-      } else {
+      if (!Number.isFinite(end)) {
         return Number.POSITIVE_INFINITY
       }
+
+      if (!this._filter) {
+        return this._parentRange ?
+            this._parentRange.count :
+            Math.floor((end - start) / step)
+      }
+
+      // TODO: we have a filter
     }
 
     next() {
@@ -119,12 +99,15 @@ function range(start, end, step = null) {
         nextIndex = Number.POSITIVE_INFINITY
       }
 
-      if (!this._filter(value, nextIndex, this)) {
+      if (this._filter && !this._filter(value, nextIndex, this)) {
         return this.next()
       }
 
       this._index = nextIndex
-      return this._map(value, this._index, this)
+      this._currentValue = this._map ?
+          this._map(value, this._index, this) :
+          value
+      return this._currentValue
     }
 
     enumerate() {
@@ -140,31 +123,11 @@ function range(start, end, step = null) {
     }
 
     map(mapCallback) {
-      let realMapCallback
-      if (this._map === IDENTITY) {
-        realMapCallback = mapCallback
-      } else {
-        realMapCallback = (value, index, instance) => {
-          let midValue = this._map(value, index, instance)
-          return mapCallback(midValue, index, instance)
-        }
-      }
-
-      let newRange = new Range(this._filter, realMapCallback)
-      newRange._currentValue = this._currentValue
-      newRange._index = this._index
-      return newRange
+      return new Range(null, mapCallback, this)
     }
 
     filter(filterCallback) {
-      let realFilterCallback
-      if (this._filter === TAUTOLOGY) {
-        realFilterCallback = filterCallback
-      } else {
-        realFilterCallback = (value, index, instance) => {
-          return this._filter(value, index, instance)
-        }
-      }
+      return new Range(filterCallback, null, this)
     }
 
     take(count) {
@@ -190,19 +153,50 @@ function range(start, end, step = null) {
     }
 
     reset() {
-      this._currentValue = start
+      if (this._parentRange) {
+        this._parentRange.reset()
+      } else {
+        this._currentValue = null
+        this._iterator = createIterator(this)
+      }
       this._index = 0
     }
 
     clone() {
-      let clone = new Range(this._filter, this._map)
+      let parentClone = this._parentRange ? this._parentRange.clone() : null
+      let clone = new Range(this._filter, this._map, parentClone)
       clone._currentValue = this._currentValue
       clone._index = this._index
+      if (!this._parentRange) {
+        clone._iterator = createIterator(clone)
+      }
       return clone
     }
 
     [Symbol.iterator]() {
       return this
+    }
+  }
+
+  function createIterator(rangeInstance) {
+    return (function * () {
+      while (!isEnded()) {
+        yield rangeInstance._currentValue
+
+        let currentSafeLimit = Number.POSITIVE_INFINITY - Math.abs(step)
+        if (currentSafeLimit > Math.abs(rangeInstance._currentValue)) {
+          rangeInstance._currentValue =
+              Math.sign(rangeInstance._currentValue) * Infinity
+        } else {
+          rangeInstance._currentValue += step
+        }
+      }
+    })()
+
+    function isEnded() {
+      return (step > 0) ?
+          (rangeInstance._currentValue >= end) :
+          (rangeInstance._currentValue <= end)
     }
   }
 
