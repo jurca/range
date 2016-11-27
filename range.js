@@ -51,9 +51,10 @@ function range(start, end, step = null) {
      * @template P
      * @param {?function(E, number, Range): boolean} filter
      * @param {?function(P, number, Range): *} map
+     * @param {?function(E, number, Range): boolean} stop
      * @param {?Range<P>} parentRange
      */
-    constructor(filter = null, map = null, parentRange = null) {
+    constructor(filter, map, stop, parentRange) {
       /**
        * @type {?function(E, number, Range): boolean}
        */
@@ -73,6 +74,11 @@ function range(start, end, step = null) {
        * @type {number}
        */
       this._index = 0
+
+      /**
+       * @type {?function(E, number, Range): boolean}
+       */
+      this._stop = stop
 
       /**
        * @type {Range}
@@ -173,12 +179,34 @@ function range(start, end, step = null) {
      * @throws {Error} Thrown if this range is infinite.
      */
     reverse() {
-      if (!Numer.isFinite(end)) {
+      if (!Number.isFinite(end)) {
         throw new Error('Infinite ranges cannot be reversed')
       }
 
-      // TODO: fix support for filtered/mapped ranges
-      return range(end, this._currentValue, -step)
+      if (!this._parentRange) {
+        return range(end, this._currentValue, -step)
+      }
+
+      let values = [...this.clone()]
+      let reversedRange = new Range(null, null, null, null)
+      reversedRange._currentValue = end
+      reversedRange._iterator = {
+        next() {
+          return {
+            done: true,
+            value: undefined
+          }
+        }
+      }
+      reversedRange._preGeneratedValues = values.map((value, index) => [
+        {
+          done: false,
+          value
+        },
+        index
+      ])
+      reversedRange._count = values.length
+      return reversedRange
     }
 
     /**
@@ -187,7 +215,7 @@ function range(start, end, step = null) {
      * @return {Range<R>}
      */
     map(mapCallback) {
-      return new Range(null, mapCallback, this)
+      return new Range(null, mapCallback, null, this)
     }
 
     /**
@@ -195,7 +223,7 @@ function range(start, end, step = null) {
      * @return {Range<E>}
      */
     filter(filterCallback) {
-      return new Range(filterCallback, null, this)
+      return new Range(filterCallback, null, null, this)
     }
 
     /**
@@ -203,7 +231,7 @@ function range(start, end, step = null) {
      * @return {Range<E>}
      */
     take(count) {
-      // TODO
+      return this.takeWhile((_, index) => index < count)
     }
 
     /**
@@ -211,17 +239,17 @@ function range(start, end, step = null) {
      * @return {Range<E>}
      */
     takeWhile(precondition) {
-      // TODO
+      return new Range(null, null, precondition, this)
     }
 
     /**
      * @template I
      * @template R
      * @param {I} initialValue
-     * @param {function((I|E|R), E): R} operation
+     * @param {function((I|R), E, number, Range): R} operation
      * @return {R}
      */
-    fold(initialValue, operation) {
+    reduce(initialValue, operation) {
       if (!Number.isFinite(end)) {
         throw new Error(
           'The fold() method cannot be applied to infinite sequences'
@@ -230,7 +258,7 @@ function range(start, end, step = null) {
 
       let result = initialValue
       for (let value of this) {
-        result = operation(result, value)
+        result = operation(result, value, this._index, this)
       }
       return result
     }
@@ -250,7 +278,7 @@ function range(start, end, step = null) {
      */
     clone() {
       let parentClone = this._parentRange ? this._parentRange.clone() : null
-      let clone = new Range(this._filter, this._map, parentClone)
+      let clone = new Range(this._filter, this._map, this._stop, parentClone)
       clone._currentValue = this._currentValue
       clone._index = this._index
       if (!this._parentRange) {
@@ -303,6 +331,11 @@ function range(start, end, step = null) {
     if (range._map) {
       iteration.value = range._map(iteration.value, nextIndex, range)
     }
+
+    if (range._stop && !range._stop(iteration.value, nextIndex, range)) {
+      return [{done: true, value: undefined}, nextIndex]
+    }
+
     return [iteration, nextIndex]
   }
 
@@ -332,7 +365,7 @@ function range(start, end, step = null) {
     }
   }
 
-  return new Range()
+  return new Range(null, null, null, null)
 }
 
 if ((typeof module !== 'undefined') && (typeof exports !== 'undefined')) {
