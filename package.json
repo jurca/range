@@ -20,5 +20,17 @@
   "bugs": {
     "url": "https://github.com/jurca/range/issues"
   },
-  "homepage": "https://github.com/jurca/range#readme"
+  "publishConfig": {
+    "registry": "http://registry.npmjs.org/"
+  },
+  "homepage": "https://github.com/jurca/range#readme",
+  "browserify": {
+    "transform": [
+      "babelify"
+    ]
+  },
+  "engines": {
+    "node": ">=6.9.1",
+    "npm": ">=3.10.8"
+  }
 }
