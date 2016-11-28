@@ -4,7 +4,7 @@
   "description": "Generators-powered Rust-like range library. Created just for the fun of it.",
   "main": "range.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node ./node_modules/gulp/bin/gulp.js"
   },
   "repository": {
     "type": "git",
@@ -32,5 +32,9 @@
   "engines": {
     "node": ">=6.9.1",
     "npm": ">=3.10.8"
+  },
+  "devDependencies": {
+    "gulp": "github:gulpjs/gulp#e9e5ab7",
+    "gulp-jasmine": "^2.4.2"
   }
 }
