@@ -133,9 +133,12 @@ function range(start, end, step = null) {
 
         this._count = Number.POSITIVE_INFINITY
       } else if (!this._filter) {
-        this._count = this._parentRange ?
-            this._parentRange.count :
-            Math.floor((end - start) / step)
+        if (this._parentRange) {
+          this._count = this._parentRange.count
+        } else {
+          this._count = Math.floor((end - start) / step) +
+              (((end - start) % step) ? 1 : 0)
+        }
       } else {
         let nextIteration = getNextValue(this, this._index)
         while (!nextIteration[0].done) {
