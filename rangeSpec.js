@@ -18,10 +18,12 @@ describe('range', () => {
 
   it('should allow generating an incrementing numeric sequence', () => {
     expect([...range(0, 10)]).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+    expect([...range(3, 5)]).toEqual([3, 4])
   })
 
   it('should allow generating a decrementing numeric sequence', () => {
     expect([...range(10, 0)]).toEqual([10, 9, 8, 7, 6, 5, 4, 3, 2, 1])
+    expect([...range(5, 3)]).toEqual([5, 4])
   })
 
   it('should allow generating a single-element sequences', () => {
