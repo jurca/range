@@ -1,8 +1,6 @@
 
 const range = require('./range').default
 
-console.log("testing")
-
 describe('range', () => {
 
   it('should return an iterable object that is its own iterator', () => {
@@ -12,9 +10,10 @@ describe('range', () => {
   })
   
   it('should return an iterator', () => {
-    expect(range(0, 1).next instanceof Function).toBe(true)
-    expect(range(0, 1).next()).toEqual({ done: false, value: 0 })
-    expect(range(0, 1).next()).toEqual({ done: true, value: undefined })
+    let testingRange = range(0, 1)
+    expect(testingRange.next instanceof Function).toBe(true)
+    expect(testingRange.next()).toEqual({ done: false, value: 0 })
+    expect(testingRange.next()).toEqual({ done: true, value: undefined })
   })
   
 })

@@ -348,8 +348,8 @@ function range(start, end, step = null) {
       while (!isEnded()) {
         yield rangeInstance._currentValue
 
-        let currentSafeLimit = Number.POSITIVE_INFINITY - Math.abs(step)
-        if (currentSafeLimit > Math.abs(rangeInstance._currentValue)) {
+        let currentSafeLimit = Number.MAX_SAFE_INTEGER - Math.abs(step)
+        if (currentSafeLimit < Math.abs(rangeInstance._currentValue)) {
           rangeInstance._currentValue =
               Math.sign(rangeInstance._currentValue) * Infinity
         } else {
