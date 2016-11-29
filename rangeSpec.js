@@ -42,4 +42,20 @@ describe('range', () => {
     expect([...range(10, 1, -3)]).toEqual([10, 7, 4])
   })
 
+  it('should allow infinite sequences', () => {
+    let testingRange = range(Number.MAX_SAFE_INTEGER - 1, Infinity)
+    expect(testingRange.next().value).toBe(Number.MAX_SAFE_INTEGER - 1)
+    expect(testingRange.next().value).toBe(Number.MAX_SAFE_INTEGER)
+    for (let _ of range(0, 100)) {
+      expect(testingRange.next().value).toBe(Infinity)
+    }
+
+    testingRange = range(Number.MIN_SAFE_INTEGER + 1, -Infinity)
+    expect(testingRange.next().value).toBe(Number.MIN_SAFE_INTEGER + 1)
+    expect(testingRange.next().value).toBe(Number.MIN_SAFE_INTEGER)
+    for (let _ of range(0, 100)) {
+      expect(testingRange.next().value).toBe(-Infinity)
+    }
+  })
+
 })

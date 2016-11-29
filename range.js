@@ -359,6 +359,10 @@ function range(start, end, step = null) {
     })()
 
     function isEnded() {
+      if (!Number.isFinite(end)) {
+        return false
+      }
+
       return (step > 0) ?
           (rangeInstance._currentValue >= end) :
           (rangeInstance._currentValue <= end)
