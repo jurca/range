@@ -93,4 +93,13 @@ describe('range', () => {
     })
   })
 
+  it('should support enumerating the sequence values and indexes', () => {
+    expect([...range(0, 4).enumerate()]).toEqual([
+      [1, 0],
+      [2, 1],
+      [3, 2],
+      [4, 3]
+    ])
+  })
+
 })
