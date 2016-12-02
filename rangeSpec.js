@@ -102,4 +102,29 @@ describe('range', () => {
     ])
   })
 
+  it('should support filtering the sequence values', () => {
+    expect([...range(0, 10).filter(n => !!(n % 2))]).toEqual([1, 3, 5, 7, 9])
+  })
+
+  it('should support exporting into an array', () => {
+    expect(range(0, 5).toArray()).toEqual([0, 1, 2, 3, 4])
+    expect(range(0, 5).enumerate().toArray()).toEqual([
+      [1, 0],
+      [2, 1],
+      [3, 2],
+      [4, 3],
+      [5, 4]
+    ])
+    expect(range(0, 5).filter(n => !!(n % 2)).toArray()).toEqual([1, 3])
+    expect(range(0, 5).map(n => n * 2).toArray()).toEqual([0, 2, 4, 6, 8])
+  })
+
+  it(
+    'should throw an error when infinite sequence should be exported into ' +
+    'an array',
+    () => {
+      expect(() => range(0, Infinity).toArray()).toThrow()
+    }
+  )
+
 })

@@ -297,6 +297,12 @@ function range(start, end, step = null) {
      * @return {E[]}
      */
     toArray() {
+      if (!Number.isFinite(end)) {
+        throw new Error(
+          'The infinite sequences cannot be exported to an array'
+        )
+      }
+
       return [...this]
     }
 
