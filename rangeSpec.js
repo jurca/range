@@ -127,4 +127,23 @@ describe('range', () => {
     }
   )
 
+  it('should support limiting the sequence length', () => {
+    expect([...range(0, Infinity).take(4)]).toEqual([0, 1, 2, 3])
+    expect([...range(0, 5).take(0)]).toEqual([])
+    expect([...range(0, 3).take(10)]).toEqual([0, 1, 2])
+  })
+
+  it('should support limiting the sequence length using a predicate', () => {
+    let testingRange = range(0, Infinity).takeWhile((value, index, range) => {
+      expect(value).toBeGreaterThan(-1)
+      expect(value).toBeLessThan(6)
+      expect(index).toBeGreaterThan(0)
+      expect(index).toBeLessThan(7)
+      expect(range).toBe(testingRange)
+
+      return value < 5
+    })
+    expect([...testingRange]).toEqual([0, 1, 2, 3, 4])
+  })
+
 })

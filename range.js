@@ -234,7 +234,15 @@ function range(start, end, step = null) {
      * @return {Range<E>}
      */
     take(count) {
-      return this.takeWhile((_, index) => index < count)
+      if (!Number.isSafeInteger(count) || (count < 0)) {
+        throw new TypeError(
+          `The count limit must be a non-negative safe integer, ${count} ` +
+          `was provided`
+        )
+      }
+
+      // TODO: mark the sequence as final
+      return this.takeWhile((_, index) => index <= count)
     }
 
     /**
