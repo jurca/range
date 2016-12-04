@@ -263,7 +263,7 @@ function range(start, end, step = null) {
     reduce(initialValue, operation) {
       if (!Number.isFinite(end)) {
         throw new Error(
-          'The fold() method cannot be applied to infinite sequences'
+          'The reduce() method cannot be applied to infinite sequences'
         )
       }
 

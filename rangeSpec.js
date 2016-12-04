@@ -146,4 +146,9 @@ describe('range', () => {
     expect([...testingRange]).toEqual([0, 1, 2, 3, 4])
   })
 
+  it('should support reducing the sequence to a single value', () => {
+    let testingRange = range(1, 11)
+    expect(testingRange.reduce(5, (a, b) => a + b)).toBe(60)
+  })
+
 })
