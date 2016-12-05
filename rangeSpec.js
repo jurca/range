@@ -151,4 +151,18 @@ describe('range', () => {
     expect(testingRange.reduce(5, (a, b) => a + b)).toBe(60)
   })
 
+  it('should support resetting the sequence', () => {
+    let testingRange = range(0, 5)
+    expect([...testingRange]).toEqual([0, 1, 2, 3, 4])
+    expect([...testingRange]).toEqual([])
+    testingRange.reset()
+    expect([...testingRange]).toEqual([0, 1, 2, 3, 4])
+
+    let anotherRange = range(0, 5).map(n => n * 2)
+    expect([...anotherRange]).toEqual([0, 2, 4, 6, 8])
+    expect([...testingRange]).toEqual([])
+    anotherRange.reset()
+    expect([...anotherRange]).toEqual([0, 2, 4, 6, 8])
+  })
+
 })

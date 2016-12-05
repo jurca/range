@@ -278,7 +278,7 @@ function range(start, end, step = null) {
       if (this._parentRange) {
         this._parentRange.reset()
       } else {
-        this._currentValue = null
+        this._currentValue = start
         this._iterator = createIterator(this)
       }
       this._index = 0
