@@ -292,8 +292,8 @@ function range(start, end, step = null) {
       let clone = new Range(this._filter, this._map, this._stop, parentClone)
       clone._currentValue = this._currentValue
       clone._index = this._index
-      if (!this._parentRange) {
-        clone._iterator = createIterator(clone)
+      if (!this._parentRange && this._index) {
+        clone._iterator.next() // shift the iterator after the current value
       }
       clone._count = this._count
       clone._preGeneratedValues = this._preGeneratedValues.slice()

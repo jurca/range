@@ -165,4 +165,16 @@ describe('range', () => {
     expect([...anotherRange]).toEqual([0, 2, 4, 6, 8])
   })
 
+  it('should support cloning of the sequence', () => {
+    let testingRange = range(0, 4)
+    expect([...testingRange.clone()]).toEqual([0, 1, 2, 3])
+    expect([...testingRange.clone()]).toEqual([0, 1, 2, 3])
+    let modifiedRange = testingRange.filter(n => n % 2).map(n => n * 2)
+    expect([...modifiedRange.clone()]).toEqual([2, 6])
+    expect([...modifiedRange.clone()]).toEqual([2, 6])
+    modifiedRange.next()
+    expect([...modifiedRange.clone()]).toEqual([6])
+    expect([...modifiedRange]).toEqual([6])
+  })
+
 })
