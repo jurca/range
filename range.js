@@ -187,7 +187,11 @@ function range(start, end, step = null) {
       }
 
       if (!this._parentRange) {
-        return range(end, this._currentValue, -step)
+        let newEnd = this._currentValue
+        if (!this._index) {
+          newEnd -= step
+        }
+        return range(end - step, newEnd, -step)
       }
 
       let values = [...this.clone()]
@@ -207,7 +211,7 @@ function range(start, end, step = null) {
           value
         },
         index
-      ])
+      ]).reverse()
       reversedRange._count = values.length
       return reversedRange
     }

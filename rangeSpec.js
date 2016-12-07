@@ -179,4 +179,18 @@ describe('range', () => {
     expect([...range(0, 4).takeWhile(n => n < 2)]).toEqual([0, 1])
   })
 
+  it('should support reversing the sequence', () => {
+    expect([...range(0, 4).reverse()]).toEqual([3, 2, 1, 0])
+    expect([...range(0, 4).filter(n => n % 2).reverse()]).toEqual([3, 1])
+    let testingRange = range(0, 4)
+    testingRange.next()
+    expect([...testingRange.clone().reverse()]).toEqual([3, 2, 1])
+    testingRange.next()
+    expect([...testingRange.reverse()]).toEqual([3, 2])
+    expect([...range(0, 4).map(n => n * 2).reverse()]).toEqual([6, 4, 2, 0])
+    expect([...range(0, 4).take(2).reverse()]).toEqual([1, 0])
+    expect([...range(0, 4).takeWhile(n => n < 2).reverse()]).toEqual([1, 0])
+    expect([...range(0, 4).reverse().clone()]).toEqual([3, 2, 1, 0])
+  })
+
 })
