@@ -175,6 +175,8 @@ describe('range', () => {
     modifiedRange.next()
     expect([...modifiedRange.clone()]).toEqual([6])
     expect([...modifiedRange]).toEqual([6])
+    expect([...range(0, 4).take(2).clone()]).toEqual([0, 1])
+    expect([...range(0, 4).takeWhile(n => n < 2)]).toEqual([0, 1])
   })
 
 })
