@@ -195,23 +195,11 @@ function range(start, end, step = null) {
       }
 
       let values = [...this.clone()]
-      let reversedRange = new Range(null, null, null, null)
+      let reversedRange = new Range(null, null, null, range(0, 0))
       reversedRange._currentValue = end
-      reversedRange._iterator = {
-        next() {
-          return {
-            done: true,
-            value: undefined
-          }
-        }
-      }
-      reversedRange._preGeneratedValues = values.map((value, index) => [
-        {
-          done: false,
-          value
-        },
-        index
-      ]).reverse()
+      reversedRange._preGeneratedValues = values.reverse().map(
+        (value, index) => [{ done: false, value }, index + 1]
+      )
       reversedRange._count = values.length
       return reversedRange
     }

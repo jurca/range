@@ -193,4 +193,51 @@ describe('range', () => {
     expect([...range(0, 4).reverse().clone()]).toEqual([3, 2, 1, 0])
   })
 
+  it('should chain the modifiers as applied', () => {
+    let testingRange = range(0, 10).filter((value, index) => {
+      expect(Number.isSafeInteger(value)).toBe(true)
+      expect(value).toBeGreaterThan(-1)
+      expect(value).toBeLessThan(10)
+      expect(Number.isSafeInteger(index)).toBe(true)
+      expect(index).toBeGreaterThan(0)
+      expect(index).toBeLessThan(11)
+
+      return value % 2
+    }).map((value, index) => {
+      expect(Number.isSafeInteger(value)).toBe(true)
+      expect(value).toBeGreaterThan(-1)
+      expect(value).toBeLessThan(10)
+      expect(value % 2).toBe(1)
+      expect(Number.isSafeInteger(index)).toBe(true)
+      expect(index).toBeGreaterThan(0)
+      expect(index).toBeLessThan(6)
+
+      return value * 2
+    }).take(4).takeWhile((value, index) => {
+      expect(Number.isSafeInteger(value)).toBe(true)
+      expect(value).toBeGreaterThan(0)
+      expect(value).toBeLessThan(15)
+      expect(value % 2).toBe(0)
+      expect(Number.isSafeInteger(index)).toBe(true)
+      expect(index).toBeGreaterThan(0)
+      expect(index).toBeLessThan(5)
+
+      return index < 4
+    }).map((value, index) => {
+      expect(Number.isSafeInteger(value)).toBe(true)
+      expect(value).toBeGreaterThan(0)
+      expect(value).toBeLessThan(11)
+      expect(Number.isSafeInteger(index)).toBe(true)
+      expect(index).toBeGreaterThan(0)
+      expect(index).toBeLessThan(4)
+
+      return -value
+    }).reverse()
+
+    let cloned = testingRange.clone()
+    expect([...cloned]).toEqual([-10, -6, -2])
+    expect(testingRange.count).toBe(3)
+    expect([...testingRange]).toEqual([-10, -6, -2])
+  })
+
 })
