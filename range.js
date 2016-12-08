@@ -93,7 +93,7 @@ function range(start, end, step = null) {
       /**
        * @type {?number}
        */
-      this._count = null
+      this._length = null
 
       /**
        * @type {[{done: boolean, value: E}, number][]}
@@ -109,9 +109,9 @@ function range(start, end, step = null) {
     /**
      * @return {number}
      */
-    get count() {
-      if (this._count !== null) {
-        return this._count
+    get length() {
+      if (this._length !== null) {
+        return this._length
       }
 
       if (!Number.isFinite(end)) {
@@ -123,7 +123,7 @@ function range(start, end, step = null) {
         }
         if (isFilteredRange) {
           console.warn(
-            'The count of filtered infinite ranges is always assumed to be ' +
+            'The length of filtered infinite ranges is always assumed to be ' +
             'Infinity, even if that is not the case, because there is no ' +
             'way to reliably determine if an infinitely-generated filtered ' +
             'range would end up having a finite number of elements in a ' +
@@ -131,12 +131,12 @@ function range(start, end, step = null) {
           )
         }
 
-        this._count = Number.POSITIVE_INFINITY
+        this._length = Number.POSITIVE_INFINITY
       } else if (!this._filter) {
         if (this._parentRange) {
-          this._count = this._parentRange.count
+          this._length = this._parentRange.count
         } else {
-          this._count = Math.floor((end - start) / step) +
+          this._length = Math.floor((end - start) / step) +
               (((end - start) % step) ? 1 : 0)
         }
       } else {
@@ -145,11 +145,11 @@ function range(start, end, step = null) {
           this._preGeneratedValues.push(nextIteration)
           nextIteration = getNextValue(this, nextIteration[1])
         }
-        this._count =
+        this._length =
             this._generatedValuesCount + this._preGeneratedValues.length
       }
 
-      return this._count
+      return this._length
     }
 
     /**
@@ -200,7 +200,7 @@ function range(start, end, step = null) {
       reversedRange._preGeneratedValues = values.reverse().map(
         (value, index) => [{ done: false, value }, index + 1]
       )
-      reversedRange._count = values.length
+      reversedRange._length = values.length
       return reversedRange
     }
 
@@ -287,7 +287,7 @@ function range(start, end, step = null) {
       if (!this._parentRange && this._index) {
         clone._iterator.next() // shift the iterator after the current value
       }
-      clone._count = this._count
+      clone._length = this._length
       clone._preGeneratedValues = this._preGeneratedValues.slice()
       clone._generatedValuesCount = this._generatedValuesCount
       return clone

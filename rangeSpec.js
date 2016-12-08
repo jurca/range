@@ -60,17 +60,17 @@ describe('range', () => {
     }
   })
 
-  it('should return the correct count of a numeric sequence', () => {
-    expect(range(0, 0).count).toBe(0)
-    expect(range(0, 1).count).toBe(1)
-    expect(range(0, 10).count).toBe(10)
-    expect(range(1, 0).count).toBe(1)
-    expect(range(10, 0).count).toBe(10)
-    expect(range(5, 15, 3).count).toBe(4)
-    expect(range(10, 0, -3).count).toBe(4)
-    expect(range(0, 9, 3).count).toBe(3)
-    expect(range(0, Infinity).count).toBe(Infinity)
-    expect(range(-100, -Infinity).count).toBe(Infinity)
+  it('should return the correct length of a numeric sequence', () => {
+    expect(range(0, 0).length).toBe(0)
+    expect(range(0, 1).length).toBe(1)
+    expect(range(0, 10).length).toBe(10)
+    expect(range(1, 0).length).toBe(1)
+    expect(range(10, 0).length).toBe(10)
+    expect(range(5, 15, 3).length).toBe(4)
+    expect(range(10, 0, -3).length).toBe(4)
+    expect(range(0, 9, 3).length).toBe(3)
+    expect(range(0, Infinity).length).toBe(Infinity)
+    expect(range(-100, -Infinity).length).toBe(Infinity)
   })
 
   it('should support mapping the sequence values', () => {
@@ -236,7 +236,7 @@ describe('range', () => {
 
     let cloned = testingRange.clone()
     expect([...cloned]).toEqual([-10, -6, -2])
-    expect(testingRange.count).toBe(3)
+    expect(testingRange.length).toBe(3)
     expect([...testingRange]).toEqual([-10, -6, -2])
   })
 
