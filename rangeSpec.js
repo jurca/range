@@ -232,12 +232,24 @@ describe('range', () => {
       expect(index).toBeLessThan(4)
 
       return -value
-    }).reverse()
+    })
+    let reversedTestingRange = testingRange.clone().reverse()
 
     let cloned = testingRange.clone()
-    expect([...cloned]).toEqual([-10, -6, -2])
+    expect([...cloned]).toEqual([-2, -6, -10])
     expect(testingRange.length).toBe(3)
-    expect([...testingRange]).toEqual([-10, -6, -2])
+    expect([...testingRange]).toEqual([-2, -6, -10])
+
+    cloned = reversedTestingRange.clone()
+    expect([...cloned]).toEqual([-10, -6, -2])
+    expect(reversedTestingRange.length).toBe(3)
+    expect([...reversedTestingRange]).toEqual([-10, -6, -2])
   })
+
+  xit('should handle resetting a chain of modifiers')
+
+  xit('should be able to provide length of filtered sequences')
+
+  xit('should be converted to a finite sequence when take is applied')
 
 })

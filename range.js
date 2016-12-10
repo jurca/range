@@ -132,9 +132,9 @@ function range(start, end, step = null) {
         }
 
         this._length = Number.POSITIVE_INFINITY
-      } else if (!this._filter) {
+      } else if (!this._filter && !this._stop) {
         if (this._parentRange) {
-          this._length = this._parentRange.count
+          this._length = this._parentRange.length
         } else {
           this._length = Math.floor((end - start) / step) +
               (((end - start) % step) ? 1 : 0)
