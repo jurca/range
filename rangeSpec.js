@@ -246,7 +246,30 @@ describe('range', () => {
     expect([...reversedTestingRange]).toEqual([-10, -6, -2])
   })
 
-  xit('should handle resetting a chain of modifiers')
+  it('should handle resetting a chain of modifiers', () => {
+    let testingRange = range(0, 10).filter(
+      n => n % 2
+    ).map(
+      n => n * 2
+    ).take(4).takeWhile((_, i) => i < 3)
+    expect(testingRange.next()).toEqual({ done: false, value: 2 })
+    testingRange.reset()
+    expect(testingRange.next()).toEqual({ done: false, value: 2 })
+    expect(testingRange.length).toBe(2)
+    testingRange.reset()
+    expect([...testingRange]).toEqual([2, 6])
+
+    testingRange.reset()
+    let reversed = testingRange.clone().reverse()
+    expect(reversed.next()).toEqual({ done: false, value: 6 })
+    reversed.reset()
+    expect(reversed.next()).toEqual({ done: false, value: 6 })
+    reversed.reset()
+    expect(reversed.length).toBe(2)
+    expect([...reversed]).toEqual([6, 2])
+  })
+
+  xit('should support reversing the sequence repeatedly')
 
   xit('should be able to provide length of filtered sequences')
 

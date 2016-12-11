@@ -101,6 +101,11 @@ function range(start, end, step = null) {
       this._preGeneratedValues = []
 
       /**
+       * @type {[{done: boolean, value: E}, number][]}
+       */
+      this._originalValues = null
+
+      /**
        * @type {number}
        */
       this._generatedValuesCount = 0
@@ -200,6 +205,7 @@ function range(start, end, step = null) {
       reversedRange._preGeneratedValues = values.reverse().map(
         (value, index) => [{ done: false, value }, index + 1]
       )
+      reversedRange._originalValues = reversedRange._preGeneratedValues.slice()
       reversedRange._length = values.length
       return reversedRange
     }
@@ -274,6 +280,12 @@ function range(start, end, step = null) {
         this._iterator = createIterator(this)
       }
       this._index = 0
+      this._generatedValuesCount = 0;
+      if (this._originalValues) {
+        this._preGeneratedValues = this._originalValues.slice();
+      } else {
+        this._preGeneratedValues = [];
+      }
     }
 
     /**
