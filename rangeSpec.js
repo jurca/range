@@ -269,7 +269,12 @@ describe('range', () => {
     expect([...reversed]).toEqual([6, 2])
   })
 
-  xit('should support reversing the sequence repeatedly')
+  it('should support reversing the sequence repeatedly', () => {
+    let testingRange = range(0, 5)
+    expect([...testingRange.reverse().reverse()]).toEqual([0, 1, 2, 3, 4])
+    testingRange = testingRange.filter(n => n % 2).map(n => n * 2)
+    expect([...testingRange.reverse().reverse()]).toEqual([2, 6])
+  })
 
   xit('should be able to provide length of filtered sequences')
 
