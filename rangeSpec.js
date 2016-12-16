@@ -276,7 +276,16 @@ describe('range', () => {
     expect([...testingRange.reverse().reverse()]).toEqual([2, 6])
   })
 
-  xit('should be able to provide length of filtered sequences')
+  it('should be able to provide length of filtered sequences', () => {
+    let testingRange = range(0, 10).filter(n => n % 2)
+    expect(testingRange.length).toBe(5)
+    testingRange = range(0, 10).filter(n => n % 2).map(n => n + 1)
+    expect(testingRange.length).toBe(5)
+    testingRange = range(0, 10).take(3)
+    expect(testingRange.length).toBe(3)
+    expect(range(10, 0, -3).filter(n => n % 2).length).toBe(2)
+    expect(range(5, Infinity).filter(n => n < 1).length).toBe(Infinity)
+  })
 
   xit('should be converted to a finite sequence when take is applied')
 
