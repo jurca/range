@@ -287,6 +287,11 @@ describe('range', () => {
     expect(range(5, Infinity).filter(n => n < 1).length).toBe(Infinity)
   })
 
-  xit('should be converted to a finite sequence when take is applied')
+  it('should be converted to a finite sequence when take is applied', () => {
+    let testingRange = range(0, Infinity)
+    expect(testingRange.length).toBe(Infinity)
+    expect(testingRange.take(6).length).toBe(6)
+    expect(range(0, 4).take(20).length).toBe(4)
+  })
 
 })

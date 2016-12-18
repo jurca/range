@@ -109,6 +109,11 @@ function range(start, end, step = null) {
        * @type {number}
        */
       this._generatedValuesCount = 0
+
+      /**
+       * @type {boolean}
+       */
+      this._isFinite = Number.isFinite(end)
     }
 
     /**
@@ -119,7 +124,7 @@ function range(start, end, step = null) {
         return this._length
       }
 
-      if (!Number.isFinite(end)) {
+      if (!this._isFinite) {
         let currentRange = this
         let isFilteredRange = !!this._filter
         while (!isFilteredRange && currentRange._parentRange) {
@@ -187,7 +192,7 @@ function range(start, end, step = null) {
      * @throws {Error} Thrown if this range is infinite.
      */
     reverse() {
-      if (!Number.isFinite(end)) {
+      if (!this._isFinite) {
         throw new Error('Infinite ranges cannot be reversed')
       }
 
@@ -239,8 +244,9 @@ function range(start, end, step = null) {
         )
       }
 
-      // TODO: mark the sequence as final
-      return this.takeWhile((_, index) => index <= count)
+      let limitedRange = this.takeWhile((_, index) => index <= count)
+      limitedRange._isFinite = true
+      return limitedRange
     }
 
     /**
@@ -259,7 +265,7 @@ function range(start, end, step = null) {
      * @return {R}
      */
     reduce(initialValue, operation) {
-      if (!Number.isFinite(end)) {
+      if (!this._isFinite) {
         throw new Error(
           'The reduce() method cannot be applied to infinite sequences'
         )
@@ -309,7 +315,7 @@ function range(start, end, step = null) {
      * @return {E[]}
      */
     toArray() {
-      if (!Number.isFinite(end)) {
+      if (!this._isFinite) {
         throw new Error(
           'The infinite sequences cannot be exported to an array'
         )
