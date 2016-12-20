@@ -312,7 +312,17 @@ function range(start, end, step = null) {
     }
 
     /**
-     * @return {E[]}
+     * Exports the remaining values in this sequence into an array (this
+     * sequence will be iterated into its end).
+     *
+     * Infinite sequences cannot be turned into an array and cause this method
+     * to throw an array. This method is therefore a safer way of turning
+     * sequences into arrays as compared to {@code [...sequence]}, because
+     * using the spread operator (...) on an infinite sequence would enter the
+     * code into and infinite operation and effectively freeze the application.
+     *
+     * @return {E[]} The generated array of values remaining in this sequence.
+     * @throws {Error} Thrown if this sequence is infinite.
      */
     toArray() {
       if (!this._isFinite) {
@@ -325,7 +335,12 @@ function range(start, end, step = null) {
     }
 
     /**
-     * @return {Range<E>}
+     * Returns the iterator of this {@linkcode Range} instance, which is the
+     * instance itself.
+     *
+     * This method is used to enable compatibility with the for-of cycles.
+     *
+     * @return {Range<E>} This instance.
      */
     [Symbol.iterator]() {
       return this
@@ -333,10 +348,17 @@ function range(start, end, step = null) {
   }
 
   /**
+   * Generates the next iteration (the value and a flag whether the end of the
+   * sequence has been reached) and the index of the iteration in the sequence
+   * of values represented by the provided {@linkcode Range} instance.
+   *
    * @template E
-   * @param {Range<E>} range
-   * @param {number} currentIndex
-   * @return {[{done: boolean, value: E}, number]}
+   * @param {Range<E>} range The {@linkcode Range} instance representing the
+   *        sequence of values for which the next value should be generated.
+   * @param {number} currentIndex The index of the previously generated value
+   *        in the sequence.
+   * @return {[{done: boolean, value: E}, number]} A tuple representing the
+   *         next iteration step and the index of the value in the sequence.
    */
   function getNextValue(range, currentIndex) {
     let iteration = range._iterator.next()
@@ -367,8 +389,15 @@ function range(start, end, step = null) {
   }
 
   /**
-   * @param {Range<number>} rangeInstance
-   * @return {{next: function(): {done: boolean, value: number}}}
+   * Creates an iterator for generating a sequence of numeric values
+   * represented by the provided {@linkcode Range} instance.
+   *
+   * @param {Range<number>} rangeInstance The {@linkcode Range} instance for
+   *        generating a sequence of numbers for which the iterator should be
+   *        created.
+   * @return {{next: function(): {done: boolean, value: number}}} The created
+   *         iterator that will generate the numeric values for the provided
+   *         {@linkcode Range} instance.
    */
   function createIterator(rangeInstance) {
     return (function * () {
