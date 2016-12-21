@@ -233,8 +233,17 @@ function range(start, end, step = null) {
     }
 
     /**
-     * @param {number} count
-     * @return {Range<E>}
+     * Returns a sequence that produces up to the specified number of values
+     * from this sequence.
+     *
+     * The returned sequence will be marked as finite, even if this sequence is
+     * infinite.
+     *
+     * @param {number} count The maximum number of elements the returned
+     *        sequence should be able to produce. Must be a safe non-negative
+     *        integer.
+     * @return {Range<E>} A sequence that will produce only up to the specified
+     *         number of elements before terminating.
      */
     take(count) {
       if (!Number.isSafeInteger(count) || (count < 0)) {
@@ -250,19 +259,42 @@ function range(start, end, step = null) {
     }
 
     /**
-     * @param {function(E, number, Range): boolean} precondition
-     * @return {Range<E>}
+     * Returns a sequence that produces values from this sequence while the
+     * provided precondition is satisfied.
+     *
+     * @param {function(E, number, Range): boolean} precondition The
+     *        precondition that will be used to test a value to determine
+     *        whether to include it in the returned sequence. The first
+     *        argument will be the candidate value, the second argument will be
+     *        its index in the sequence, and the third will be the returned
+     *        sequence itself.
+     * @return {Range<E>} A sequence that produces the values from this
+     *         sequence while the provided precondition holds true.
      */
     takeWhile(precondition) {
       return new Range(null, null, precondition, this)
     }
 
     /**
+     * Reduces the elements of this sequence using the provided operation into
+     * a single value. This method works in the same way as the
+     * {@linkcode Array.prototype.reduce} method.
+     *
+     * The method cannot be used on infinite sequences and will throw an error.
+     *
      * @template I
      * @template R
-     * @param {I} initialValue
-     * @param {function((I|R), E, number, Range): R} operation
-     * @return {R}
+     * @param {I} initialValue The initial value for the first argument of the
+     *        provided operation function.
+     * @param {function((I|R), E, number, Range): R} operation The operation to
+     *        apply on the elements of this sequence in order to produce the
+     *        resulting value. The first argument will either be the provided
+     *        initial value or a mid-result value, the second argument will be
+     *        the currently processed element of the sequence, the third will
+     *        be the elements index, and the last argument is this sequence
+     *        itself.
+     * @return {R} The resulting computed value.
+     * @throws {Error} Thrown if called on an infinite sequence.
      */
     reduce(initialValue, operation) {
       if (!this._isFinite) {
@@ -278,6 +310,10 @@ function range(start, end, step = null) {
       return result
     }
 
+    /**
+     * Resets this sequence to its start, allowing it to generate the same
+     * values again.
+     */
     reset() {
       if (this._parentRange) {
         this._parentRange.reset()
@@ -295,7 +331,11 @@ function range(start, end, step = null) {
     }
 
     /**
-     * @return {Range<E>}
+     * Creates a clone of of this sequence. The clone will generate the same
+     * values as this sequence from now on. If this sequence has already been
+     * used to generate values, these values will not appear in the clone.
+     *
+     * @return {Range<E>} A clone of this sequence.
      */
     clone() {
       let parentClone = this._parentRange ? this._parentRange.clone() : null
@@ -316,7 +356,7 @@ function range(start, end, step = null) {
      * sequence will be iterated into its end).
      *
      * Infinite sequences cannot be turned into an array and cause this method
-     * to throw an array. This method is therefore a safer way of turning
+     * to throw an error. This method is therefore a safer way of turning
      * sequences into arrays as compared to {@code [...sequence]}, because
      * using the spread operator (...) on an infinite sequence would enter the
      * code into and infinite operation and effectively freeze the application.
