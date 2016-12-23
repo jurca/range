@@ -225,8 +225,16 @@ function range(start, end, step = null) {
     }
 
     /**
-     * @param {function(E, number, Range): boolean} filterCallback
-     * @return {Range<E>}
+     * Returns a new sequence that filters the values produced by this sequence
+     * using the provided callback.
+     *
+     * @param {function(E, number, Range): boolean} filterCallback The callback
+     *        that will be used to filter the values of this sequence. The
+     *        first argument will be the value, the second will be the index of
+     *        the value in the returned sequence should it pass the filter, and
+     *        the last will be the returned sequence.
+     * @return {Range<E>} A sequence that produces the values of this sequence
+     *         filtered through thr provided callback.
      */
     filter(filterCallback) {
       return new Range(filterCallback, null, null, this)
