@@ -121,7 +121,10 @@ function range(start, end, step = null) {
      * is able to produce in total).
      *
      * Note that the filtered infinite sequences cannot have their length
-     * determined and this property will return {@code Infinite} for them.
+     * determined and this property will return {@code Infinity} for them.
+     *
+     * The property will may return {@code Infinity} for sequences that produce
+     * more than {@code Number.MAX_SAFE_INTEGER} values.
      *
      * @return {number} The number of values this sequence is able to produce
      *         in total.
@@ -162,8 +165,13 @@ function range(start, end, step = null) {
           this._preGeneratedValues.push(nextIteration)
           nextIteration = getNextValue(this, nextIteration[1])
         }
-        this._length =
-            this._generatedValuesCount + this._preGeneratedValues.length
+        let safeLimit = Number.MAX_SAFE_INTEGER - this._generatedValuesCount
+        if (this._preGeneratedValues.length <= safeLimit) {
+          this._length =
+              this._generatedValuesCount + this._preGeneratedValues.length
+        } else {
+          this._length = Number.POSITIVE_INFINITY
+        }
       }
 
       return this._length
@@ -185,7 +193,11 @@ function range(start, end, step = null) {
 
       this._index = nextIndex
       this._currentValue = iteration.value
-      this._generatedValuesCount++
+      if (this._generatedValuesCount < Number.MAX_SAFE_INTEGER) {
+        this._generatedValuesCount++
+      } else {
+        this._generatedValuesCount = Number.POSITIVE_INFINITY
+      }
 
       return iteration
     }
