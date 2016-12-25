@@ -117,7 +117,14 @@ function range(start, end, step = null) {
     }
 
     /**
-     * @return {number}
+     * Returns the length of this sequence (the number of values the sequence
+     * is able to produce in total).
+     *
+     * Note that the filtered infinite sequences cannot have their length
+     * determined and this property will return {@code Infinite} for them.
+     *
+     * @return {number} The number of values this sequence is able to produce
+     *         in total.
      */
     get length() {
       if (this._length !== null) {
@@ -163,7 +170,10 @@ function range(start, end, step = null) {
     }
 
     /**
-     * @return {{done: boolean, value: E}}
+     * Returns the next iteration step of this sequence.
+     *
+     * @return {{done: boolean, value: E}} The next iteration step.
+     * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols
      */
     next() {
       let iteration, nextIndex
@@ -181,14 +191,28 @@ function range(start, end, step = null) {
     }
 
     /**
-     * @return {Range<[number, E]>}
+     * Returns a new sequence that will generate a two-tuples (arrays)
+     * containing the remaining values from this sequence with their indexes in
+     * the returned sequence.
+     *
+     * The index will be the first element of the returned tuple, the original
+     * value will be the second element of the returned tuple.
+     *
+     * @return {Range<[number, E]>} A sequence generating the remaining values
+     *         and their indexes in tuples.
      */
     enumerate() {
       return this.map((value, index) => [index, value])
     }
 
     /**
-     * @return {Range<E>}
+     * Returns a new sequence that will produce the remaining values in this
+     * sequence in the reverse order.
+     *
+     * Infinite sequences cannot be reversed.
+     *
+     * @return {Range<E>} A sequence that will produce the reamining values in
+     *         this sequence in the reverse order.
      * @throws {Error} Thrown if this range is infinite.
      */
     reverse() {
@@ -216,9 +240,17 @@ function range(start, end, step = null) {
     }
 
     /**
+     * Returns a new sequence that maps the values produced by this sequence
+     * using the provided callback to new values.
+     *
      * @template R
-     * @param {function(E, number, Range): R} mapCallback
-     * @return {Range<R>}
+     * @param {function(E, number, Range): R} mapCallback The callback that
+     *        will be used to transform the values of this sequence. This first
+     *        argument will be the value, the second will be the index of the
+     *        value in the returned sequence, and the last will be the returned
+     *        sequence.
+     * @return {Range<R>} A sequence that produces the values of this sequence
+     *         transformed using the provided callback.
      */
     map(mapCallback) {
       return new Range(null, mapCallback, null, this)
