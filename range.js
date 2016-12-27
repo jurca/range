@@ -1,10 +1,20 @@
 
 /**
+ * Creates a new sequence of values from the specified starting value
+ * (inclusive), to the specified end value (exclusive).
  *
- * @param {number} start
- * @param {number} end
- * @param {?number} step
- * @return {Range<number>}
+ * The returned object is an iterable object (compatible with the for..of
+ * loops), and it is its own iterator.
+ *
+ * @param {number} start The starting value of the returned sequence. Must be a
+ *        safe integer.
+ * @param {number} end The ending value of the returned sequence (exclusive).
+ *        Must be a safe integer or infinity.
+ * @param {?number=} step The step between two consecutive values produced by
+ *        the sequence. Must be a safe integer, or {@code null}. When set to
+ *        {@code null} or left unspecified, defaults to {@code 1} for
+ *        increasing sequences or {@code -1} for decreasing sequences.
+ * @return {Range<number>} The created sequence of values.
  */
 function range(start, end, step = null) {
   if (!Number.isSafeInteger(start)) {
