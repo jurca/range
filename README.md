@@ -1,4 +1,308 @@
 # range
 
-Generators-powered [Rust](https://www.rust-lang.org/en-US/)-like range library.
-Created just for the fun of it.
+Generators-powered (lazily-computed)
+[Rust](https://www.rust-lang.org/en-US/)-like range library. Created just for
+the fun of it.
+
+## Setup
+
+### Browsers
+
+Include the `range.js` in your page like so:
+
+```html
+<script src="node_modules/gen-range/range.js"></script>
+```
+
+The `range()` function will become available in the global context:
+
+```javascript
+for (let n of range(0, 10)) {
+  // do something with n
+}
+```
+
+Note that `gen-range` is not compatible with Internet Explorer (unless
+transpiled by babel or traceur).
+
+### Node.js / Browserify / Webpack
+
+Import the range function using `require` or `import` whichever is supported by
+your platform:
+
+```javascript
+const range = require('gen-range')
+
+// ---- or ----
+
+import range from 'gen-range'
+```
+
+Note that `gen-range` is not compatible with Node.js 5 or older (unless
+transpiled by babel or traceur).
+
+## Usage
+
+To create a sequence (range) of numeric values, specify the starting and ending
+values of the sequence as the arguments of the `range` function respectively:
+
+```javascript
+let sequence = range(0, 10)
+```
+
+The ending value will not be included in the generated sequence (unless set to
+`Infinity`).
+
+The starting value must be a safe integer (an integer within the
+`Number.MIN_SAFE_INTEGER` and `Number.MAX_SAFE_INTEGER` range), the ending
+value must be a safe integer or positive or negative `Infitnity`.
+
+The generated sequence is
+[iterable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols)
+and is its own iterator:
+
+```javascript
+for (let n of range(0, 10)) {
+  console.log(n) // will output 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 to the console
+}
+
+let sequence = range(0, 10)
+let iteration = sequence.next()
+while (!iteration.done) {
+  console.log(iteration.value) // same as the for..of loop above
+  iteration = sequence.next()
+}
+
+// This will spread the sequence and create the following array:
+// [0, 1, 2, 3, 4]
+let values = [...range(0, 5)]
+```
+
+Decrementing sequences are supported as well:
+
+```javascript
+for (let n of range(10, 0)) {
+  console.log(n) // will output 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 to the console
+}
+```
+
+Set both parameters to the same value to create an empty sequence:
+
+```javascript
+for (let n of range(0, 0)) {
+  console.log(n) // this will never be executed
+}
+```
+
+The `range()` function does accept a third parameter to specify the step
+between two consecutive values of the generated sequence:
+
+```javascript
+for (let n of range(0, 10, 3)) {
+  console.log(n) // will output 0, 3, 6, 9 to the console
+}
+```
+
+All sequences have the `length` property which reports the total number of
+elements that the sequence has so farm and will until reaching the end,
+produced:
+
+```javascript
+console.log(range(0, 10).length) // 10
+console.log(range(15, -15).length) // 30
+console.log(range(0, 10, 3).length) // 4
+```
+
+Note that the length of filtered infinite sequences and infinite sequence with
+a predicate stop (see below) cannot be determined in a finite time, therefore
+the `length` property will return `Infinity` in such cases.
+
+Last but not least, the generated sequences can be infinite - just set the
+second argument to either `Infinity` or `-Infinity`. Infinite sequences are not
+very useful on its own, however, they are useful in combination with filters
+and transformed sequences where the necessary length is not known upfront (see
+below for sequence modifiers):
+
+```javascript
+// Creates the following sequence: 15, 16, 17, 18, 19, 20, 21, ...
+let infiniteSequence = range(15, Infinity)
+console.log(infiniteSequence.length) // Infinity
+
+// None of the following statements would finish:
+let values = [...infiniteSequence]
+for (let n of infiniteSequence) {}
+```
+
+### Modifying the created sequences
+
+The generated sequences expose various APIs which are used to create a
+pipeline that filters and/or modifies the generated values.
+
+Chaining multiple modifiers will cause the generated values to be passed
+through all of the applied modifiers in the sequence that they were attached.
+Since applying modifiers creates a pipeline, iterating the last produced
+sequence object iterates also all the sequence objects up the whole pipeline,
+including the source numeric sequence created using the `range()` function.
+
+#### Enumeration
+
+The simples transformation is enumerating the values couples with their
+indexes in the sequence:
+
+```javascript
+for (let [index, value] of range(4, 7).enumerate()) {
+  // This will output { index: 0, value: 4 }, { index: 1, value: 5 },
+  // { index: 2, value: 6 } to the console
+  console.log({ index, value })
+}
+```
+
+#### Transforming sequence values
+
+The values produced by the sequence can be transformed using the `map()`
+method:
+
+```javascript
+for (let n of range(0, 5).map(n => n * 2)) {
+  console.log(n) // will output 0, 2, 4, 6, 8 to the console
+}
+```
+
+The `map()` accepts a callback which will be called for each element of the
+sequence and will obtain the following arguments:
+
+- the value generated by the sequence
+- the index of the generated value within the sequence
+- reference to the sequence itself
+
+The value returned by the callback will be returned as the iteration value of
+the returned sequence.
+
+#### Filtering sequence values
+
+Use the `filter()` method to filter the values generated by the sequence:
+
+```javascript
+for (let n of range(0, 10).filter(n => n > 5)) {
+  console.log(n) // will produce 6, 7, 8, 9 to the console
+}
+```
+
+The `filter()` method accepts a callback which will be called for each element
+of the sequence and will obtain the following arguments:
+
+- the value generated by the sequence
+- the index of the generated value within the returned sequence, should it pass
+  the test
+- reference to the sequence itself
+
+Only the values for which the callback returns a truthy value (e.g. `true`)
+will be included in the returned sequence.
+
+#### Reversing a sequence
+
+Sequences can be reversed using the `reverse()` method:
+
+```javascript
+for (let n of range(0, 5).reverse()) {
+  console.log(n) // will output 4, 3, 2, 1, 0 to the console
+}
+```
+
+Reversing a sequence that has other modifiers applied to it usually means that
+all its elements has to be computed first, which may be CPU-intensive for long
+sequences.
+
+Infinite sequences cannot be reversed.
+
+#### Restricting the length of a sequence
+
+The length of a sequence can be restricted using either the `take()` method or
+the `takeWhile()` method:
+
+```javascript
+for (let n of range(0, Infinity).take(3)) {
+  console.log(n) // will output 0, 1, 2 to the console
+}
+for (let n of range(0, 10).takeWhile(n => n < 3)) {
+  console.log(n) // will output 0, 1, 2 to the console
+}
+```
+
+The `take()` method accepts the maximum number the returned sequence should be
+able to produce as its argument.
+
+The `takeWhile()` method accepts a callback as its argument. The callback will
+be applied to every candidate value to test whether the value should be
+included in the sequence. The callback will receive the following arguments:
+
+- the candidate value
+- the index of the candidate value, should it pass the test
+- the returned sequence itself
+
+The callback must return a falsy value (e.g. `false`) once it encounters a
+value that should not, nor any value following it, be a part of the returned
+sequence. This will terminate the returned sequence.
+
+Note that while the `take()` method **can** be used to create a **finite
+sequence from an infinite one**, the `takeWhile()` method **should not be used
+to do the same**, because the passed callback may never return `false`.
+Therefore, while it is possible to use `takeWhile()` with infinite sequences,
+proceed on your own risk.
+
+### Manipulating the created sequences
+
+The created sequence objects also provide various methods for manipulating the
+sequences.
+
+#### Reducing the sequence to a single value
+
+To reduce the whole sequence using a provided operation, use the `reduce()`
+method:
+
+```javascript
+let sum = range(0, 5).reduce(0, (a, b) => a + b) // 10
+```
+
+The `reduce()` method accepts two arguments: the second one is a callback
+representing the operation, and the first one is the value to use for the
+first argument of the callback when processing the first element of the
+remainder of the sequence. The callback passed to the second argument will
+receive the following arguments:
+
+- the first argument of the `reduce()` method when processing the first element
+  of the sequence, or the current partial result
+- the currently processed element of the sequence
+- the index of the currently processed element of the sequence
+- the currently processed sequence itself
+
+#### Resetting a sequence
+
+Any sequence in any state can be reset to its initial state before any element
+of it has been consumed by invoking the `reset()` method.
+
+Calling `reset()` on a sequence in pipeline therefore resets the whole
+pipeline.
+
+#### Cloning a sequence
+
+The `clone()` method creates a copy of the source sequence in its current
+state, also reflecting the already consumed values of the sequence:
+
+```javascript
+let source = range(0, 5)
+source.next() // 0
+source.clone().next() // 1
+source.next() // 1
+```
+
+Cloning a sequence that is the end of a pipeline clones the whole pipeline from
+the source to the cloned sequence.
+
+#### Exporting a sequence to an array
+
+Since it is not always safe to use the spread operator to convert a sequence to
+an array because of infinite sequences, the `toArray()` method provides a safer
+alternative.
+
+The `toArray()` method throws an error when invoked on an infinite sequence.
