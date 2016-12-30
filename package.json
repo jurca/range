@@ -1,6 +1,6 @@
 {
   "name": "gen-range",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Generators-powered Rust-like range library. Created just for the fun of it.",
   "main": "range.js",
   "scripts": {
@@ -35,6 +35,6 @@
   },
   "devDependencies": {
     "gulp": "github:gulpjs/gulp#e9e5ab7",
-    "gulp-jasmine": "^2.4.2"
+    "gulp-jasmine": "2.4.2"
   }
 }
